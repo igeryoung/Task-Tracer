@@ -1,0 +1,118 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+/* ========= 全域 UI Token ========= */
+:root {
+    --clr-primary: #6366f1;
+    --clr-secondary: #818cf8;
+    --clr-bg-dark: #1e293b;
+    --clr-card-bg: rgba(30, 41, 59, 0.5);
+    --radius-lg: 1rem;
+    --spacing-base: 1rem;
+    --font-base: 'Segoe UI', system-ui, sans-serif;
+  }
+  
+  /* ========= Reset & Body ========= */
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    font-family: var(--font-base);
+    background: linear-gradient(135deg, #0f172a, var(--clr-bg-dark));
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+  }
+  
+  /* ========= Layout Helpers ========= */
+  .container {
+    display: flex; flex-direction: column;
+    width: 100%; max-width: 80rem; gap: var(--spacing-base);
+    padding: var(--spacing-base);
+  }
+  @media (min-width: 768px) {
+    .container { flex-direction: row; }
+  }
+  .brand-panel {
+    flex: 1; padding: var(--spacing-base);
+  }
+  .form-section {
+    flex: 1; display: flex; justify-content: center; align-items: center;
+  }
+  
+  /* ========= Card ========= */
+  .card {
+    background: var(--clr-card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    width: 100%; max-width: 32rem;
+    transition: transform .3s, box-shadow .3s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(99,102,241,.5);
+  }
+  
+  /* ========= Tabs ========= */
+  .tabs {
+    display: flex; background: #334155; border-radius: var(--radius-lg); overflow: hidden;
+  }
+  .tab {
+    flex:1; text-align:center; padding:.75rem 1rem;
+    cursor: pointer; transition: border .3s;
+  }
+  .tab:hover { border:2px solid var(--clr-primary); }
+  .tab--active { background: var(--clr-primary); color: #fff; }
+  
+  /* ========= Form Controls ========= */
+  .form-toggle {
+    animation: fadeIn .4s ease-in-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .input-group {
+    position: relative; margin-bottom: 1rem;
+  }
+  .input-group i {
+    position: absolute; top:50%; left:1rem; transform:translateY(-50%);
+    color: #cbd5e1;
+    pointer-events: none;
+  }
+  .input {
+    width:100%; padding:.75rem 1rem .75rem 3rem;
+    background:#334155; border:1px solid #475569; border-radius:.75rem;
+    outline:none; transition:border .2s;
+  }
+  .input:focus { border:2px solid var(--clr-primary); }
+  
+  /* ========= Buttons ========= */
+  .btn {
+    display:block; width:100%; text-align:center;
+    padding:.75rem; border-radius:.75rem;
+    font-weight:600; font-size:1rem;
+    transition: border .3s;
+  }
+  .btn + .btn { margin-top:1rem; }
+  .btn--primary { background: var(--clr-primary); color:#fff; }
+  .btn--primary:hover { background: var(--clr-secondary); }
+  .btn--link { background: none; color: var(--clr-secondary); text-decoration: underline; }
+  
+  /* ========= Footer ========= */
+  .footer {
+    margin-top: 2rem; text-align: center; color: #94a3b8; font-size: .875rem;
+  }
+  
+  /* ========= Font ========= */
+  .h1 {
+    font-size: 3rem;       /* Tailwind’s text-5xl */
+    line-height: 1;        /* Tailwind defaults text-5xl to line-height: 1 */
+    font-weight: 700;      /* Tailwind’s font-bold */
+    margin-bottom: 1rem;   /* Tailwind’s mb-4 (4 × 0.25rem) */
+  }
+  .p {
+    font-size: 1.25rem;        /* Tailwind’s text-xl */
+    line-height: 1.75rem;      /* Tailwind’s default leading-relaxed for text-xl */
+    color: #cbd5e1;            /* Tailwind’s text-slate-300 */
+    margin-bottom: 1.5rem;     /* Tailwind’s mb-6 (6 × 0.25rem) */
+  }
