@@ -1,9 +1,15 @@
-// src/appointments/appointment.entity.ts (for TS typing)
+// src/appointments/appointment.entity.ts
 export interface Appointment {
   id: number;
   subject: string;
-  startTime: string; // ISO string
-  endTime: string; // ISO string
+  description?: string;
+  startTime: string;
+  endTime: string;
   color?: string;
   classType?: string;
+  isAllDay?: boolean;
+  recurrenceRule?: string;
+  startTimezone?: string;
+  endTimezone?: string;
+  userId: string;
 }
