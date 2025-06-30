@@ -1,0 +1,39 @@
+.task-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #f9fafb; /* Slightly off-white background */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease;
+  }
+  
+  .task-card:not(:last-child) {
+    margin-bottom: 0.75rem;
+  }
+  
+  .task-card:hover {
+    background-color: #f3f4f6;
+  }
+  
+  .task-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    flex-shrink: 0; /* Prevents the box from shrinking */
+    transition: border-color 0.2s ease;
+  }
+  
+  .task-checkbox:hover {
+    border-color: #3b82f6; /* Blue border on hover */
+  }
+  
+  .task-text {
+    margin: 0;
+    color: #374151;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }

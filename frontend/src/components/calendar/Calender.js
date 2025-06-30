@@ -14,6 +14,7 @@ import {
 import './Calender.css'
 import { createElement } from '@syncfusion/ej2-base'
 import { DropDownList } from '@syncfusion/ej2-dropdowns'
+import ComponentHeader from '../shared/ComponentHeader'
 
 function getColorContainer(args) {
   const container = createElement('div', { className: 'color-field-container' })
@@ -145,40 +146,45 @@ export default function Calendar() {
   }
 
   return (
-    <ScheduleComponent
-      ref={scheduleRef}
-      width="100%"
-      height="100%"
-      eventSettings={{
-        dataSource: events,
-        fields: {
-          id: 'Id',
-          subject: { name: 'Subject' },
-          startTime: { name: 'StartTime' },
-          endTime: { name: 'EndTime' },
-          color: { name: 'Color' },
-          classType: { name: 'ClassType' },
-          userId: { name: 'userId' },
-        },
-      }}
-      popupOpen={onPopupOpen}
-      actionComplete={onActionComplete}
-      currentView="Month"
-      editsettings={{
-        allowAdding: true,
-        allowEditing: true,
-        allowDeleting: true,
-        allowBatch: false,
-      }}
-    >
-      <ViewsDirective>
-        <ViewDirective option="Day" />
-        <ViewDirective option="Week" />
-        <ViewDirective option="WorkWeek" />
-        <ViewDirective option="Month" />
-        <ViewDirective option="Agenda" />
-      </ViewsDirective>
-      <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
-    </ScheduleComponent>
+    <div className="calendar-container">
+      <ComponentHeader title="My Calendar" />
+      <div className="schedule-container">
+        <ScheduleComponent
+          cssClass="main-schedule-component"
+          ref={scheduleRef}
+          height="95%"
+          eventSettings={{
+            dataSource: events,
+            fields: {
+              id: 'Id',
+              subject: { name: 'Subject' },
+              startTime: { name: 'StartTime' },
+              endTime: { name: 'EndTime' },
+              color: { name: 'Color' },
+              classType: { name: 'ClassType' },
+              userId: { name: 'userId' },
+            },
+          }}
+          popupOpen={onPopupOpen}
+          actionComplete={onActionComplete}
+          currentView="Month"
+          editsettings={{
+            allowAdding: true,
+            allowEditing: true,
+            allowDeleting: true,
+            allowBatch: false,
+          }}
+        >
+          <ViewsDirective>
+            <ViewDirective option="Day" />
+            <ViewDirective option="Week" />
+            <ViewDirective option="WorkWeek" />
+            <ViewDirective option="Month" />
+            <ViewDirective option="Agenda" />
+          </ViewsDirective>
+          <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
+        </ScheduleComponent>
+      </div>
+    </div>
   )
 }

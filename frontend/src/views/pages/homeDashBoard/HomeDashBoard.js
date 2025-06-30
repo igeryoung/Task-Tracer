@@ -2,20 +2,18 @@ import './HomeDashBoard.css'
 import { AppSidebar, AppFooter, AppHeader } from '../../../components/index'
 import Calendar from '../../../components/calendar/Calender'
 import { RequireAuth } from '../../../components/auth/RequireAuth'
+import DailyTasks from '../../../components/DailyTasks/DailyTasks'
+import { useState } from 'react'
 
 function HomeDashBoard() {
+  const [isTopCardShrunk, setIsTopCardShrunk] = useState(false)
   return (
     <div className="main-layout-container">
-      <div className="calendar-container">
-        <Calendar />
-      </div>
+      <Calendar />
 
       <div className="right-item-container">
-        <div className="card-container">
-          <div className="placeholder-content">
-            <h2>Top Card</h2>
-            <p>(50% Height)</p>
-          </div>
+        <div className={`card-container top-card ${isTopCardShrunk ? 'shrunk' : ''}`}>
+          <DailyTasks onCompletionStateChange={setIsTopCardShrunk} />
         </div>
 
         <div className="card-container">

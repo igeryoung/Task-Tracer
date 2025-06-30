@@ -8,3 +8,45 @@
 @import "../../../../node_modules/@syncfusion/ej2-popups/styles/material.css";
 @import "../../../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
 @import "../../../../node_modules/@syncfusion/ej2-react-schedule/styles/material.css";
+
+.calendar-container {
+    flex: 0 0 70%;
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  /* 2. This new container will handle the scrolling */
+  .schedule-container {
+    flex-grow: 1; /* This makes it take up all available space after the header */
+    overflow: hidden; /* The scrollbar will appear here when needed */
+    min-height: 0; /* Critical fix to prevent it from overflowing its parent */
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Add some padding around the calendar */
+    margin-bottom: 1rem;
+  }
+
+
+/* Target the Syncfusion schedule component to make it fill the remaining space */
+.main-schedule-component {
+    margin: 1rem;
+    flex-grow: 1;
+    min-height: 0;
+    background-color: #f3f4f6;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* --- Optional: Customizations for Syncfusion editor to match our theme --- */
+  
+  .e-schedule-dialog .e-dialog-header {
+    background-color: #f3f4f6;
+    font-weight: 600;
+  }
