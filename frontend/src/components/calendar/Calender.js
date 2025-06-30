@@ -178,11 +178,10 @@ export default function Calendar() {
           <ViewsDirective>
             <ViewDirective option="Day" />
             <ViewDirective option="Week" />
-            <ViewDirective option="WorkWeek" />
             <ViewDirective option="Month" />
             <ViewDirective option="Agenda" />
           </ViewsDirective>
-          <Inject services={[Day, Week, WorkWeek, Month, Agenda]} />
+          <Inject services={[Day, Week, Month, Agenda]} />
         </ScheduleComponent>
       </div>
     </div>

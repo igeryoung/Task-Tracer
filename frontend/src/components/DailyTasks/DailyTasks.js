@@ -1,36 +1,69 @@
 import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import SortableTaskCard from './SortableTaskCard'
 import TaskCard from './TaskCard'
 import AddTaskModal from './AddTaskModal'
 import './DailyTasks.css'
+
+// Imports from dnd-kit for drag and drop functionality
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from '@dnd-kit/core'
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 const initialTasks = [
   { id: 1, text: 'Review the Q2 financial report', completed: false },
   { id: 2, text: 'Prepare presentation for the Monday meeting', completed: false },
   { id: 3, text: 'Send follow-up email to the design team', completed: false },
-  { id: 4, text: 'Review the Q2 financial report', completed: false },
-  { id: 5, text: 'Prepare presentation for the Monday meeting', completed: false },
-  { id: 6, text: 'Send follow-up email to the design team', completed: false },
+  { id: 4, text: 'Draft the initial project proposal', completed: false },
+  { id: 5, text: 'Book flight for the business trip', completed: false },
+  { id: 6, text: 'Finalize the weekly newsletter', completed: false },
 ]
 
-// The component now accepts a prop to communicate its state
 export default function DailyTasks({ onCompletionStateChange }) {
   const [tasks, setTasks] = useState(initialTasks)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [activeTask, setActiveTask] = useState(null)
 
   const visibleTasks = tasks.filter((task) => !task.completed)
-  const allTasksDone = visibleTasks.length === 0 // Create a boolean for convenience
+  const allTasksDone = visibleTasks.length === 0
 
-  // --- THIS IS THE NEW LOGIC ---
-  // This effect hook will call the parent function whenever the
-  // number of visible tasks changes, informing it of the completion state.
   useEffect(() => {
     if (onCompletionStateChange) {
-      onCompletionStateChange(visibleTasks.length === 0)
+      onCompletionStateChange(allTasksDone)
     }
-  }, [visibleTasks.length, onCompletionStateChange])
-  // --- END OF NEW LOGIC ---
+  }, [allTasksDone, onCompletionStateChange])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+  )
+
+  function handleDragStart(event) {
+    const { active } = event
+    setActiveTask(tasks.find((task) => task.id === active.id))
+  }
+
+  function handleDragEnd(event) {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      setTasks((currentTasks) => {
+        const oldIndex = currentTasks.findIndex((item) => item.id === active.id)
+        const newIndex = currentTasks.findIndex((item) => item.id === over.id)
+        return arrayMove(currentTasks, oldIndex, newIndex)
+      })
+    }
+    setActiveTask(null)
+  }
 
   const handleToggleComplete = (taskId) => {
     setTasks(tasks.map((task) => (task.id === taskId ? { ...task, completed: true } : task)))
@@ -58,13 +91,30 @@ export default function DailyTasks({ onCompletionStateChange }) {
       <div className={`task-list ${allTasksDone ? 'is-complete' : ''}`}>
         {allTasksDone ? (
           <div className="no-tasks-message">
-            {/* The message is simplified and uses an h2 tag for styling */}
             <h2>All tasks completed! 🎉</h2>
           </div>
         ) : (
-          visibleTasks.map((task) => (
-            <TaskCard key={task.id} task={task} onToggleComplete={handleToggleComplete} />
-          ))
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={visibleTasks.map((task) => task.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {visibleTasks.map((task) => (
+                <SortableTaskCard
+                  key={task.id}
+                  task={task}
+                  onToggleComplete={handleToggleComplete}
+                />
+              ))}
+            </SortableContext>
+
+            <DragOverlay>{activeTask ? <TaskCard task={activeTask} /> : null}</DragOverlay>
+          </DndContext>
         )}
       </div>
 
