@@ -4,6 +4,7 @@ import Calendar from '../../../components/calendar/Calender'
 import { RequireAuth } from '../../../components/auth/RequireAuth'
 import DailyTasks from '../../../components/DailyTasks/DailyTasks'
 import { useState } from 'react'
+import ActivityLog from '../../../components/ActivityLog/ActivityLog'
 
 function HomeDashBoard() {
   const [isTopCardShrunk, setIsTopCardShrunk] = useState(false)
@@ -16,11 +17,9 @@ function HomeDashBoard() {
           <DailyTasks onCompletionStateChange={setIsTopCardShrunk} />
         </div>
 
-        <div className="card-container">
-          <div className="placeholder-content">
-            <h2>Bottom Card</h2>
-            <p>(50% Height)</p>
-          </div>
+        <div className="card-container bottom-card">
+          {/* Replace the placeholder with the new ActivityLog component */}
+          <ActivityLog />
         </div>
       </div>
     </div>

@@ -1,0 +1,71 @@
+/* The main card is a positioning context for the color bar */
+.log-item-card {
+  position: relative;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  user-select: none;
+  padding: 1rem 1rem 1rem 2rem;
+}
+
+.log-item-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* The color bar is positioned absolutely to guarantee its height */
+.color-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 12px;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+/* The content wrapper uses flexbox to align title and the right-side section */
+.log-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.log-item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---
+--- NEW STYLES TO ADD THE SEPARATOR BACK ---
+--- */
+
+/* This new wrapper groups the line and the timestamp */
+.log-item-right-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Space between the line and the timestamp */
+  flex-shrink: 0; /* Prevents this section from shrinking */
+}
+
+/* The style for the separator line itself */
+.separator-line {
+  width: 1px;
+  /* Give it a height relative to the text size */
+  height: 1.25em; 
+  background-color: #e5e7eb; /* Light gray border color */
+}
+
+.log-timestamp {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+/* --- END OF NEW STYLES --- */

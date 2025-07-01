@@ -15,6 +15,7 @@ import './Calender.css'
 import { createElement } from '@syncfusion/ej2-base'
 import { DropDownList } from '@syncfusion/ej2-dropdowns'
 import ComponentHeader from '../shared/ComponentHeader'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 function getColorContainer(args) {
   const container = createElement('div', { className: 'color-field-container' })
@@ -147,7 +148,11 @@ export default function Calendar() {
 
   return (
     <div className="calendar-container">
-      <ComponentHeader title="My Calendar" />
+      <ComponentHeader
+        title="My Calendar"
+        buttonIcon={faPlus}
+        onButtonClick={() => setIsModalOpen(true)}
+      />
       <div className="schedule-container">
         <ScheduleComponent
           cssClass="main-schedule-component"

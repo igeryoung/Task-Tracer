@@ -1,34 +1,68 @@
+/* ---
+--- THE DEFINITIVE FIX USING ABSOLUTE POSITIONING ---
+--- */
+
+/* 1. The main card is now a positioning context */
 .task-card {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background-color: #f9fafb; /* Slightly off-white background */
-    padding: 1rem;
+    position: relative; /* This is crucial for the absolute positioned bar */
     border-radius: 0.5rem;
+    background-color: #ffffff;
     border: 1px solid #e5e7eb;
-    transition: background-color 0.2s ease;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease-in-out;
+    cursor: grab;
+    user-select: none;
+    
+    /* Add padding to the card itself, with extra on the left to make room for the bar */
+    padding: 1rem 1rem 1rem 2rem;
   }
   
-  .task-card:not(:last-child) {
-    margin-bottom: 0.75rem;
+  .task-card:active {
+    cursor: grabbing;
   }
   
   .task-card:hover {
-    background-color: #f3f4f6;
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   }
   
+  /* 2. The color bar is now positioned absolutely within the card */
+  .color-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0; /* This forces the bar to be 100% of the parent's height */
+    width: 8px;
+    /* Match the parent card's rounded corners on the left side */
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+  
+  /* 3. The content wrapper no longer needs its own padding */
+  .task-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* --- Checkbox and Text styles remain the same --- */
   .task-checkbox {
     width: 20px;
     height: 20px;
-    border: 2px solid #d1d5db;
     border-radius: 0.25rem;
     cursor: pointer;
-    flex-shrink: 0; /* Prevents the box from shrinking */
-    transition: border-color 0.2s ease;
+    flex-shrink: 0;
+    border: 1px solid #d1d5db;
+    box-shadow: 1px 1px 2px #bebebe, -1px -1px 2px #ffffff;
+    transition: all 0.1s linear;
   }
   
   .task-checkbox:hover {
-    border-color: #3b82f6; /* Blue border on hover */
+    border-color: #3b82f6;
+  }
+  
+  .task-checkbox:active {
+    background: #e0e0e0;
+    box-shadow: inset 1px 1px 2px #bebebe, inset -1px -1px 2px #ffffff;
   }
   
   .task-text {

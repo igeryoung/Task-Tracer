@@ -79,3 +79,78 @@
   .submit-task-button:hover {
     transform: translateY(-2px);
   }
+
+  .category-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  
+  .category-option {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+  
+  /* Visually hide the actual radio button */
+  .category-option input[type="radio"] {
+    display: none;
+  }
+  
+  .category-option:has(input:checked) {
+    border-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .warning-message {
+    padding: 0.75rem;
+    margin-top: 1rem;
+    background-color: #fef2f2; /* Light red background */
+    color: #b91c1c; /* Darker red text */
+    border: 1px solid #fecaca; /* Light red border */
+    border-radius: 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .fixed-height-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-family: inherit; /* Ensure it uses the same font as other inputs */
+    box-sizing: border-box;
+    
+    /* --- The new styles --- */
+    height: 120px;     /* Set a fixed height */
+    resize: none;        /* Prevent manual resizing by the user */
+    overflow-y: auto;  /* Add a scrollbar if the content overflows */
+  }
+  
+  /* Container for the new time cost inputs */
+  .time-cost-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .time-cost-inputs .time-input {
+    width: 70px; /* Give the number inputs a smaller, fixed width */
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .time-cost-inputs .time-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+  }

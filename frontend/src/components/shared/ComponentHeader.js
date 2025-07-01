@@ -6,12 +6,14 @@ export default function ComponentHeader({ title, buttonIcon, buttonText, onButto
   return (
     <div className="component-header">
       <h2 className="component-header-title">{title}</h2>
-      {buttonIcon && buttonText && (
-        <button className="component-header-button" onClick={onButtonClick}>
-          <FontAwesomeIcon icon={buttonIcon} />
-          {buttonText && <span>{buttonText}</span>}
-        </button>
-      )}
+      <button
+        className="component-header-button"
+        onClick={onButtonClick}
+        style={{ display: buttonText ? 'flex' : 'none' }}
+      >
+        <FontAwesomeIcon icon={buttonIcon} />
+        {buttonText && <span>{buttonText}</span>}
+      </button>
     </div>
   )
 }

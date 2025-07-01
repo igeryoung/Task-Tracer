@@ -72,6 +72,11 @@
     padding: 0; /* Let the DailyTasks component handle its own internal padding */
   }
   
+  .bottom-card {
+    flex-grow: 1;
+    padding: 0;
+  }
+  
   /* --- Placeholder Content Style --- */
   .placeholder-content {
     text-align: center;

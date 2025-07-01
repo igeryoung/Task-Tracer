@@ -5,8 +5,6 @@ import SortableTaskCard from './SortableTaskCard'
 import TaskCard from './TaskCard'
 import AddTaskModal from './AddTaskModal'
 import './DailyTasks.css'
-
-// Imports from dnd-kit for drag and drop functionality
 import {
   DndContext,
   closestCenter,
@@ -16,14 +14,24 @@ import {
   DragOverlay,
 } from '@dnd-kit/core'
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import ComponentHeader from '../shared/ComponentHeader'
 
 const initialTasks = [
-  { id: 1, text: 'Review the Q2 financial report', completed: false },
-  { id: 2, text: 'Prepare presentation for the Monday meeting', completed: false },
-  { id: 3, text: 'Send follow-up email to the design team', completed: false },
-  { id: 4, text: 'Draft the initial project proposal', completed: false },
-  { id: 5, text: 'Book flight for the business trip', completed: false },
-  { id: 6, text: 'Finalize the weekly newsletter', completed: false },
+  { id: 1, text: 'Review the Q2 financial report', completed: false, category: 'work' },
+  {
+    id: 2,
+    text: 'Prepare presentation for the Monday meeting',
+    completed: false,
+    category: 'work',
+  },
+  { id: 3, text: 'Send follow-up email to the design team', completed: false, category: 'urgent' },
+  { id: 4, text: 'Book dentist appointment', completed: false, category: 'personal' },
+  {
+    id: 5,
+    text: 'Complete the React course section on hooks',
+    completed: false,
+    category: 'study',
+  },
 ]
 
 export default function DailyTasks({ onCompletionStateChange }) {
@@ -35,58 +43,49 @@ export default function DailyTasks({ onCompletionStateChange }) {
   const allTasksDone = visibleTasks.length === 0
 
   useEffect(() => {
-    if (onCompletionStateChange) {
-      onCompletionStateChange(allTasksDone)
-    }
+    if (onCompletionStateChange) onCompletionStateChange(allTasksDone)
   }, [allTasksDone, onCompletionStateChange])
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-  )
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
   function handleDragStart(event) {
-    const { active } = event
-    setActiveTask(tasks.find((task) => task.id === active.id))
+    setActiveTask(tasks.find((t) => t.id === event.active.id))
   }
 
   function handleDragEnd(event) {
     const { active, over } = event
     if (over && active.id !== over.id) {
-      setTasks((currentTasks) => {
-        const oldIndex = currentTasks.findIndex((item) => item.id === active.id)
-        const newIndex = currentTasks.findIndex((item) => item.id === over.id)
-        return arrayMove(currentTasks, oldIndex, newIndex)
+      setTasks((current) => {
+        const oldIndex = current.findIndex((t) => t.id === active.id)
+        const newIndex = current.findIndex((t) => t.id === over.id)
+        return arrayMove(current, oldIndex, newIndex)
       })
     }
     setActiveTask(null)
   }
 
   const handleToggleComplete = (taskId) => {
-    setTasks(tasks.map((task) => (task.id === taskId ? { ...task, completed: true } : task)))
+    setTasks(tasks.map((t) => (t.id === taskId ? { ...t, completed: true } : t)))
   }
 
-  const handleAddTask = (taskText) => {
+  const handleAddTask = (taskText, category) => {
     const newTask = {
       id: Date.now(),
       text: taskText,
       completed: false,
+      category,
     }
     setTasks([newTask, ...tasks])
   }
 
   return (
     <div className="daily-tasks-container">
-      <div className="tasks-header">
-        <h2 className="header-title">Daily Tasks</h2>
-        <button className="add-task-button" onClick={() => setIsModalOpen(true)}>
-          <FontAwesomeIcon icon={faPlus} />
-          <span>Add Task</span>
-        </button>
-      </div>
+      <ComponentHeader
+        title="Daily Tasks"
+        buttonIcon={faPlus}
+        buttonText="Add Task"
+        onButtonClick={() => setIsModalOpen(true)}
+      />
 
       <div className={`task-list ${allTasksDone ? 'is-complete' : ''}`}>
         {allTasksDone ? (
@@ -101,7 +100,7 @@ export default function DailyTasks({ onCompletionStateChange }) {
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={visibleTasks.map((task) => task.id)}
+              items={visibleTasks.map((t) => t.id)}
               strategy={verticalListSortingStrategy}
             >
               {visibleTasks.map((task) => (
@@ -113,7 +112,7 @@ export default function DailyTasks({ onCompletionStateChange }) {
               ))}
             </SortableContext>
 
-            <DragOverlay>{activeTask ? <TaskCard task={activeTask} /> : null}</DragOverlay>
+            <DragOverlay>{activeTask && <TaskCard task={activeTask} />}</DragOverlay>
           </DndContext>
         )}
       </div>
