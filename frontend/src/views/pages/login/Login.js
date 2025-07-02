@@ -80,7 +80,7 @@ export default function LoginRegisterPage() {
       if (mode === 'login') {
         localStorage.setItem('token', data.access_token)
         localStorage.setItem('userId', data.id)
-        navigate('/dashboard')
+        navigate('/homeDashBoard')
       } else {
         alert(data.message || 'Registration successful! Please sign in.')
         setMode('login') // Switch to login mode after successful registration
