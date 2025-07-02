@@ -16,10 +16,7 @@ export class TasksService {
   async create(createTaskDto: CreateTaskDto, userId: string) {
     const { text, category, task_type, repeat_day } = createTaskDto;
 
-    // For recurring tasks, we don't need a position, but for future features
-    // that might sort single tasks, you could calculate the initial position here.
-    // For now, we'll set a default.
-    const initialPosition = 0;
+    // const initialPosition = 0;
 
     const { data, error } = await this.supabase
       .from('tasks')
@@ -29,7 +26,7 @@ export class TasksService {
         task_type,
         repeat_day: task_type === 'recurring' ? repeat_day : null,
         user_id: userId,
-        position: initialPosition, // Note: We kept position in the DTO for now, but DB schema removed it. Let's assume it might come back.
+        // position: initialPosition, // Note: We kept position in the DTO for now, but DB schema removed it. Let's assume it might come back.
       })
       .select()
       .single();

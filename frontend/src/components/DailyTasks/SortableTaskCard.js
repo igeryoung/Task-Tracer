@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import TaskCard from './TaskCard'
 
-export default function SortableTaskCard({ task, onToggleComplete, isExiting }) {
+export default function SortableTaskCard({ task, onToggleComplete, onEditClick, isExiting }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
   })
@@ -16,7 +16,7 @@ export default function SortableTaskCard({ task, onToggleComplete, isExiting }) 
   }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onEditClick}>
       <TaskCard task={task} onToggleComplete={onToggleComplete} isExiting={isExiting} />
     </div>
   )
