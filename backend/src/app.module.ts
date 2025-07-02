@@ -4,9 +4,17 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { AppointmentsModule } from './appointments/appointments.module';
+import { TasksModule } from './tasks/tasks.module';
+import { ActivityLogsModule } from './activity-logs/activity-logs.module';
 
 @Module({
-  imports: [AuthModule, ConfigModule.forRoot(), AppointmentsModule],
+  imports: [
+    AuthModule,
+    ConfigModule.forRoot(),
+    AppointmentsModule,
+    TasksModule,
+    ActivityLogsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

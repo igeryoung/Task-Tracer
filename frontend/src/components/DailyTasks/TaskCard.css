@@ -1,73 +1,133 @@
-/* ---
---- THE DEFINITIVE FIX USING ABSOLUTE POSITIONING ---
---- */
+/* ============================= */
+/*        TASK CARD STYLES       */
+/* ============================= */
 
-/* 1. The main card is now a positioning context */
 .task-card {
-    position: relative; /* This is crucial for the absolute positioned bar */
-    border-radius: 0.5rem;
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.06);
-    transition: all 0.2s ease-in-out;
-    cursor: grab;
-    user-select: none;
-    
-    /* Add padding to the card itself, with extra on the left to make room for the bar */
-    padding: 1rem 1rem 1rem 2rem;
+  position: relative;       /* positioning context for absolute children */
+  display: flex;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.06);
+  cursor: grab;
+  user-select: none;
+  /* padding with extra left for the color bar */
+  padding: 1rem 1rem 1rem 2rem;
+  /* transitions for hover and exit animations */
+  transition:
+    all 0.2s ease-in-out,
+    max-height 0.4s ease-in-out,
+    margin 0.4s ease-in-out,
+    padding 0.4s ease-in-out;
+}
+
+.task-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.task-card:active {
+  cursor: grabbing;
+}
+
+/* ============================= */
+/*        COLOR BAR STYLES       */
+/* ============================= */
+
+.color-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;               /* fill 100% of parent's height */
+  width: 8px;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+/* ============================= */
+/*      TASK CONTENT STYLES      */
+/* ============================= */
+
+.task-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ============================= */
+/*   CHECKBOX & TEXT STYLES      */
+/* ============================= */
+
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 1px solid #d1d5db;
+  box-shadow: 1px 1px 2px #bebebe, -1px -1px 2px #ffffff;
+  transition: all 0.1s linear;
+}
+
+.task-checkbox:hover {
+  border-color: #3b82f6;
+}
+
+.task-checkbox:active {
+  background: #e0e0e0;
+  box-shadow: inset 1px 1px 2px #bebebe, inset -1px -1px 2px #ffffff;
+}
+
+/* ============================= */
+/*       TEXT WRAPPER STYLES     */
+/* ============================= */
+
+/* Wrapper around .task-text to position the strikethrough */
+.text-wrapper {
+  position: relative;
+}
+
+/* The task text itself */
+.task-text {
+  margin: 0;
+  color: #374151;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Strikethrough line element */
+.strikethrough-line {
+  position: absolute;
+  top: 52%;              /* vertically center on text */
+  left: 0;
+  height: 2px;
+  background-color: #374151;
+  width: 0%;             /* starts hidden */
+  transition: width 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ============================= */
+/*   EXIT ANIMATION STYLES       */
+/* ============================= */
+
+/* Fade & collapse after strikethrough */
+.task-card.is-exiting {
+  animation: fadeAndCollapse 0.5s forwards;
+}
+
+@keyframes fadeAndCollapse {
+  from {
+    opacity: 1;
+    transform: scaleY(1);
+    max-height: 60px;     /* approximate card height */
+    margin-bottom: 0.5rem;
   }
-  
-  .task-card:active {
-    cursor: grabbing;
+  to {
+    opacity: 0;
+    transform: scaleY(0);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-width: 0;
   }
-  
-  .task-card:hover {
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* 2. The color bar is now positioned absolutely within the card */
-  .color-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0; /* This forces the bar to be 100% of the parent's height */
-    width: 8px;
-    /* Match the parent card's rounded corners on the left side */
-    border-radius: 0.5rem 0 0 0.5rem;
-  }
-  
-  /* 3. The content wrapper no longer needs its own padding */
-  .task-content {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  /* --- Checkbox and Text styles remain the same --- */
-  .task-checkbox {
-    width: 20px;
-    height: 20px;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    flex-shrink: 0;
-    border: 1px solid #d1d5db;
-    box-shadow: 1px 1px 2px #bebebe, -1px -1px 2px #ffffff;
-    transition: all 0.1s linear;
-  }
-  
-  .task-checkbox:hover {
-    border-color: #3b82f6;
-  }
-  
-  .task-checkbox:active {
-    background: #e0e0e0;
-    box-shadow: inset 1px 1px 2px #bebebe, inset -1px -1px 2px #ffffff;
-  }
-  
-  .task-text {
-    margin: 0;
-    color: #374151;
-    font-size: 0.95rem;
-    line-height: 1.4;
-  }
+}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import SortableTaskCard from './SortableTaskCard'
 import TaskCard from './TaskCard'
 import AddTaskModal from './AddTaskModal'
+import ComponentHeader from '../shared/ComponentHeader'
 import './DailyTasks.css'
 import {
   DndContext,
@@ -14,7 +15,6 @@ import {
   DragOverlay,
 } from '@dnd-kit/core'
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import ComponentHeader from '../shared/ComponentHeader'
 
 const initialTasks = [
   { id: 1, text: 'Review the Q2 financial report', completed: false, category: 'work' },
@@ -34,16 +34,22 @@ const initialTasks = [
   },
 ]
 
+const ANIMATION_DURATION = 500
+
 export default function DailyTasks({ onCompletionStateChange }) {
   const [tasks, setTasks] = useState(initialTasks)
+  const [exitingTaskIds, setExitingTaskIds] = useState(new Set())
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [activeTask, setActiveTask] = useState(null)
 
-  const visibleTasks = tasks.filter((task) => !task.completed)
-  const allTasksDone = visibleTasks.length === 0
+  // Tasks not yet completed or in exit animation
+  const visibleTasks = tasks.filter((t) => !t.completed && !exitingTaskIds.has(t.id))
+  const allTasksDone = visibleTasks.length === 0 && exitingTaskIds.size === 0
 
   useEffect(() => {
-    if (onCompletionStateChange) onCompletionStateChange(allTasksDone)
+    if (onCompletionStateChange) {
+      onCompletionStateChange(allTasksDone)
+    }
   }, [allTasksDone, onCompletionStateChange])
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
@@ -64,14 +70,23 @@ export default function DailyTasks({ onCompletionStateChange }) {
     setActiveTask(null)
   }
 
+  // Trigger exit animation before marking completed
   const handleToggleComplete = (taskId) => {
-    setTasks(tasks.map((t) => (t.id === taskId ? { ...t, completed: true } : t)))
+    setExitingTaskIds((prev) => new Set(prev).add(taskId))
+    setTimeout(() => {
+      setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, completed: true } : t)))
+      setExitingTaskIds((prev) => {
+        const s = new Set(prev)
+        s.delete(taskId)
+        return s
+      })
+    }, ANIMATION_DURATION)
   }
 
-  const handleAddTask = (taskText, category) => {
+  const handleAddTask = (text, category) => {
     const newTask = {
       id: Date.now(),
-      text: taskText,
+      text,
       completed: false,
       category,
     }
@@ -99,20 +114,23 @@ export default function DailyTasks({ onCompletionStateChange }) {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            <SortableContext
-              items={visibleTasks.map((t) => t.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              {visibleTasks.map((task) => (
-                <SortableTaskCard
-                  key={task.id}
-                  task={task}
-                  onToggleComplete={handleToggleComplete}
-                />
-              ))}
+            <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+              {tasks.map((task) => {
+                if (task.completed) return null
+                return (
+                  <SortableTaskCard
+                    key={task.id}
+                    task={task}
+                    onToggleComplete={handleToggleComplete}
+                    isExiting={exitingTaskIds.has(task.id)}
+                  />
+                )
+              })}
             </SortableContext>
 
-            <DragOverlay>{activeTask && <TaskCard task={activeTask} />}</DragOverlay>
+            <DragOverlay>
+              {activeTask && <TaskCard task={activeTask} isExiting={false} />}
+            </DragOverlay>
           </DndContext>
         )}
       </div>
