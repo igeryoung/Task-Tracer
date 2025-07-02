@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ActivityLogsModule } from './activity-logs/activity-logs.module';
-
+import { TaskCompletionsModule } from './task-completions/task-completions.module';
 @Module({
   imports: [
     AuthModule,
@@ -14,6 +14,7 @@ import { ActivityLogsModule } from './activity-logs/activity-logs.module';
     AppointmentsModule,
     TasksModule,
     ActivityLogsModule,
+    TaskCompletionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

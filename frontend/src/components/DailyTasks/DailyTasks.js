@@ -35,31 +35,37 @@ export default function DailyTasks({ onCompletionStateChange }) {
   // drag state
   const [activeTask, setActiveTask] = useState(null)
 
+  // fetch tasks and today's completions
   const fetchTasks = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await apiClient.get('/tasks')
 
-      const today = new Date()
-      const dayIndex = (today.getDay() + 6) % 7
+      // fetch task templates and today's completions in parallel
+      const todayString = new Date().toISOString().split('T')[0]
+      const [tasksRes, completionsRes] = await Promise.all([
+        apiClient.get('/tasks'),
+        apiClient.get(`/task-completions?date=${todayString}`),
+      ])
+      const completedTodayIds = new Set(completionsRes.data)
 
-      const tasksForToday = response.data.filter((task) => {
+      // determine today's index (Mon=0…Sun=6)
+      const dayIndex = (new Date().getDay() + 6) % 7
+
+      // filter for today's tasks
+      const tasksForToday = tasksRes.data.filter((task) => {
         if (task.task_type === 'single') {
           return !task.is_completed
         }
-        // Include recurring tasks if today's bit is '1'.
         if (task.task_type === 'recurring') {
-          return task.repeat_day?.[dayIndex] === '1'
+          const scheduled = task.repeat_day?.[dayIndex] === '1'
+          const alreadyDone = completedTodayIds.has(task.id)
+          return scheduled && !alreadyDone
         }
         return false
       })
 
-      const fetchedTasks = tasksForToday.map((t) => ({
-        ...t,
-        completed: t.is_completed,
-      }))
-      setTasks(fetchedTasks)
+      setTasks(tasksForToday)
     } catch (err) {
       console.error(err)
       setError('Failed to load tasks. Please try again later.')
@@ -72,43 +78,23 @@ export default function DailyTasks({ onCompletionStateChange }) {
     fetchTasks()
   }, [fetchTasks])
 
-  // derived
-  const visibleTasks = tasks.filter((t) => !t.completed && !exitingTaskIds.has(t.id))
-  const allTasksDone = !isLoading && visibleTasks.length === 0 && exitingTaskIds.size === 0
-
-  useEffect(() => {
-    if (onCompletionStateChange) {
-      onCompletionStateChange(allTasksDone)
-    }
-  }, [allTasksDone, onCompletionStateChange])
-
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
-
-  function handleDragStart(event) {
-    setActiveTask(tasks.find((t) => t.id === event.active.id))
-  }
-
-  function handleDragEnd(event) {
-    const { active, over } = event
-    if (over && active.id !== over.id) {
-      const oldIndex = tasks.findIndex((t) => t.id === active.id)
-      const newIndex = tasks.findIndex((t) => t.id === over.id)
-      setTasks(arrayMove(tasks, oldIndex, newIndex))
-      // optionally PATCH /tasks/reorder here
-    }
-    setActiveTask(null)
-  }
-
   // complete with animation + API
   const handleToggleComplete = (taskId) => {
     setExitingTaskIds((prev) => new Set(prev).add(taskId))
+
     setTimeout(async () => {
+      const task = tasks.find((t) => t.id === taskId)
+      if (!task) return
       try {
-        await apiClient.patch(`/tasks/${taskId}`, { is_completed: true })
-        setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, completed: true } : t)))
+        if (task.task_type === 'single') {
+          await apiClient.patch(`/tasks/${taskId}`, { is_completed: true })
+        } else {
+          await apiClient.post('/task-completions', { task_id: taskId })
+        }
+        setTasks((prev) => prev.filter((t) => t.id !== taskId))
       } catch (err) {
-        console.error(err)
-      } finally {
+        console.error('Failed to complete task:', err)
+        // revert animation on failure
         setExitingTaskIds((prev) => {
           const s = new Set(prev)
           s.delete(taskId)
@@ -118,14 +104,9 @@ export default function DailyTasks({ onCompletionStateChange }) {
     }, ANIMATION_DURATION)
   }
 
-  // open modal for add or edit
+  // modal controls
   const handleOpenModal = (taskId = null) => {
-    if (taskId != null) {
-      const taskToEdit = tasks.find((t) => t.id === taskId)
-      setEditingTask(taskToEdit)
-    } else {
-      setEditingTask(null)
-    }
+    setEditingTask(taskId != null ? tasks.find((t) => t.id === taskId) : null)
     setIsModalOpen(true)
   }
   const handleCloseModal = () => {
@@ -133,29 +114,47 @@ export default function DailyTasks({ onCompletionStateChange }) {
     setEditingTask(null)
   }
 
-  // create or update
+  // save new or updated task
   const handleSaveTask = async (data) => {
-    if (data.id) {
-      // update
-      try {
+    try {
+      if (data.id) {
         const res = await apiClient.patch(`/tasks/${data.id}`, data)
         setTasks((curr) => curr.map((t) => (t.id === data.id ? { ...t, ...res.data } : t)))
-      } catch (err) {
-        console.error('Failed to update task:', err)
-      }
-    } else {
-      // create
-      try {
+      } else {
         const res = await apiClient.post('/tasks', data)
         setTasks((curr) => [{ ...res.data, completed: res.data.is_completed }, ...curr])
-      } catch (err) {
-        console.error('Failed to add task:', err)
       }
+    } catch (err) {
+      console.error('Failed to save task:', err)
     }
     handleCloseModal()
   }
 
-  // render body
+  // drag-and-drop
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
+  const handleDragStart = (event) => {
+    setActiveTask(tasks.find((t) => t.id === event.active.id))
+  }
+  const handleDragEnd = (event) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      const oldIndex = tasks.findIndex((t) => t.id === active.id)
+      const newIndex = tasks.findIndex((t) => t.id === over.id)
+      setTasks(arrayMove(tasks, oldIndex, newIndex))
+      // optionally save order via API
+    }
+    setActiveTask(null)
+  }
+
+  // compute visible tasks
+  const visibleTasks = tasks.filter((t) => !exitingTaskIds.has(t.id))
+  const allTasksDone = !isLoading && visibleTasks.length === 0
+
+  useEffect(() => {
+    if (onCompletionStateChange) onCompletionStateChange(allTasksDone)
+  }, [allTasksDone, onCompletionStateChange])
+
+  // render content
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -185,19 +184,19 @@ export default function DailyTasks({ onCompletionStateChange }) {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-          {tasks.map((task) => {
-            if (task.completed) return null
-            return (
-              <SortableTaskCard
-                key={task.id}
-                task={task}
-                onToggleComplete={handleToggleComplete}
-                onEditClick={() => handleOpenModal(task.id)}
-                isExiting={exitingTaskIds.has(task.id)}
-              />
-            )
-          })}
+        <SortableContext
+          items={visibleTasks.map((t) => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {visibleTasks.map((task) => (
+            <SortableTaskCard
+              key={task.id}
+              task={task}
+              onToggleComplete={handleToggleComplete}
+              onEditClick={() => handleOpenModal(task.id)}
+              isExiting={exitingTaskIds.has(task.id)}
+            />
+          ))}
         </SortableContext>
         <DragOverlay>{activeTask && <TaskCard task={activeTask} isExiting={false} />}</DragOverlay>
       </DndContext>
