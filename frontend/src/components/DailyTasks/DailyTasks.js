@@ -130,6 +130,18 @@ export default function DailyTasks({ onCompletionStateChange }) {
     handleCloseModal()
   }
 
+  // delete handler to pass into modal
+  const handleDeleteTask = async (taskId) => {
+    const original = [...tasks]
+    setTasks(tasks.filter((t) => t.id !== taskId))
+    try {
+      await apiClient.delete(`/tasks/${taskId}`)
+    } catch (err) {
+      console.error('Failed to delete task:', err)
+      setTasks(original)
+    }
+  }
+
   // drag-and-drop
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
   const handleDragStart = (event) => {
@@ -217,6 +229,7 @@ export default function DailyTasks({ onCompletionStateChange }) {
           taskToEdit={editingTask}
           onSave={handleSaveTask}
           onClose={handleCloseModal}
+          onDelete={handleDeleteTask}
         />
       )}
     </div>

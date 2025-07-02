@@ -184,3 +184,51 @@
   color: #1e40af;
   border-color: #3b82f6;
 }
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between; /* Aligns items to opposite ends */
+  align-items: center;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* This targets the two buttons directly inside the footer */
+.modal-footer > button {
+  width: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.submit-task-button {
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.delete-button-modal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #ef4444; /* Red color for destructive action */
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-button-modal:hover {
+  background-color: #fee2e2; /* Light red background on hover */
+}

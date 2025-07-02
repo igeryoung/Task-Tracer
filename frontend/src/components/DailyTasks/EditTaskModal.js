@@ -1,10 +1,13 @@
+// src/components/DailyTasks/EditTaskModal.js
 import React, { useState, useEffect } from 'react'
 import { TASK_CATEGORIES } from './taskConstants'
 import './EditTaskModal.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 
 const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-export default function EditTaskModal({ taskToEdit, onSave, onClose }) {
+export default function EditTaskModal({ taskToEdit, onSave, onClose, onDelete }) {
   const [text, setText] = useState('')
   const [category, setCategory] = useState(Object.keys(TASK_CATEGORIES)[0])
   const [repeatDays, setRepeatDays] = useState(new Array(7).fill(true))
@@ -26,24 +29,29 @@ export default function EditTaskModal({ taskToEdit, onSave, onClose }) {
   }, [taskToEdit])
 
   const handleWeekdayClick = (index) => {
-    const newRepeatDays = [...repeatDays]
-    newRepeatDays[index] = !newRepeatDays[index]
-    setRepeatDays(newRepeatDays)
+    const newRepeat = [...repeatDays]
+    newRepeat[index] = !newRepeat[index]
+    setRepeatDays(newRepeat)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (text.trim()) {
-      const repeatDayString = repeatDays.map((day) => (day ? '1' : '0')).join('')
-      const isRecurring = repeatDays.some((day) => day === true)
+    if (!text.trim()) return
+    const repeatDayString = repeatDays.map((day) => (day ? '1' : '0')).join('')
+    const isRecurring = repeatDays.some((day) => day)
+    onSave({
+      id: taskToEdit ? taskToEdit.id : null,
+      text,
+      category,
+      task_type: isRecurring ? 'recurring' : 'single',
+      repeat_day: isRecurring ? repeatDayString : null,
+    })
+    onClose()
+  }
 
-      onSave({
-        id: taskToEdit ? taskToEdit.id : null,
-        text,
-        category, // This now correctly reads the updated category state
-        task_type: isRecurring ? 'recurring' : 'single',
-        repeat_day: isRecurring ? repeatDayString : null,
-      })
+  const handleDeleteClick = () => {
+    if (taskToEdit && onDelete) {
+      onDelete(taskToEdit.id)
       onClose()
     }
   }
@@ -83,9 +91,6 @@ export default function EditTaskModal({ taskToEdit, onSave, onClose }) {
                     name="category"
                     value={key}
                     checked={category === key}
-                    // --- THIS IS THE FIX ---
-                    // This onChange handler correctly calls setCategory,
-                    // which updates the component's state with the new selection.
                     onChange={() => setCategory(key)}
                   />
                   {name}
@@ -97,11 +102,11 @@ export default function EditTaskModal({ taskToEdit, onSave, onClose }) {
           <div className="form-group">
             <label>Repeat on</label>
             <div className="weekday-selector">
-              {weekdays.map((day, index) => (
+              {weekdays.map((day, idx) => (
                 <div
                   key={day}
-                  className={`weekday-box ${repeatDays[index] ? 'active' : ''}`}
-                  onClick={() => handleWeekdayClick(index)}
+                  className={`weekday-box ${repeatDays[idx] ? 'active' : ''}`}
+                  onClick={() => handleWeekdayClick(idx)}
                 >
                   {day}
                 </div>
@@ -109,9 +114,16 @@ export default function EditTaskModal({ taskToEdit, onSave, onClose }) {
             </div>
           </div>
 
-          <button type="submit" className="submit-task-button">
-            {taskToEdit ? 'Save Changes' : 'Add Task'}
-          </button>
+          <div className="modal-footer">
+            <button type="submit" className="submit-task-button">
+              {taskToEdit ? 'Save Changes' : 'Add Task'}
+            </button>
+            {taskToEdit && (
+              <button type="button" className="delete-button-modal" onClick={handleDeleteClick}>
+                <FontAwesomeIcon icon={faTrash} /> Delete
+              </button>
+            )}
+          </div>
         </form>
       </div>
     </div>

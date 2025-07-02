@@ -97,7 +97,7 @@ export default function ActivityLog() {
   return (
     <div className="daily-tasks-container">
       <ComponentHeader
-        title="Today's Activity Log"
+        title="Today's Activity"
         buttonIcon={faPlus}
         buttonText="Add Log"
         onButtonClick={() => handleOpenModal()}
