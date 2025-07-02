@@ -1,0 +1,89 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 1rem 2rem 2rem 2rem;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* ... other modal styles like .modal-header, .form-group, etc. are unchanged ... */
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; margin-bottom: 12px; padding: 12px; }
+.modal-header h2 { margin: 0; font-size: 1.5rem; color: #111827; }
+.close-button { background: none; border: none; font-size: 2rem; line-height: 1; color: #9ca3af; cursor: pointer; }
+.form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; color: #374151; }
+.form-group input[type="text"], .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
+.fixed-height-textarea { height: 120px; resize: none; overflow-y: auto; }
+.time-cost-inputs { display: flex; align-items: center; gap: 0.75rem; }
+.time-cost-inputs .time-input { width: 70px; padding: 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; }
+.time-cost-inputs .time-label { font-size: 0.9rem; color: #6b7280; }
+.category-selector { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem; }
+.category-option { display: flex; align-items: center; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: 2px solid transparent; transition: all 0.2s ease; }
+.category-option input[type="radio"] { display: none; }
+.category-option:has(input:checked) { border-color: rgba(0, 0, 0, 0.4); }
+.warning-message { padding: 0.75rem; margin-top: 1rem; background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 0.5rem; text-align: center; font-size: 0.9rem; font-weight: 500; }
+
+
+/* ---
+--- CORRECTED MODAL FOOTER STYLES ---
+--- */
+
+.modal-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; /* Pushes items to opposite ends */
+  align-items: stretch; /* Makes items stretch to the same height */
+  width: 100%;
+  gap: 10%; /* Creates a 10% gap between the buttons */
+  margin-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.submit-task-button {
+  width: 60%; /* Set width to 60% */
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.delete-button-modal {
+  max-height: 51.19px;
+  width: 30%; /* Set width to 30% */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the content inside */
+  margin-top: 24px;
+  gap: 0.5rem;
+  background-color: #f3f4f6; /* Give it a light gray background */
+  color: #ef4444;
+  border: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-button-modal:hover {
+  background-color: #fde2e2;
+  border-color: #fecaca;
+}

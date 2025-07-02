@@ -24,6 +24,7 @@ export class ActivityLogsController {
 
   @Post()
   create(@Body() createDto: CreateActivityLogDto, @Req() req) {
+    console.log(req.user);
     const userId = req.user.sub;
     return this.activityLogsService.create(createDto, userId);
   }

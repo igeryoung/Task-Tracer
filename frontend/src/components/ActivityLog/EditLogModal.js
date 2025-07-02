@@ -1,28 +1,28 @@
+// src/components/ActivityLog/EditLogModal.js
 import React, { useState, useEffect } from 'react'
 import { LOG_STATUSES } from './logConstants'
-import '../DailyTasks/AddTaskModal.css' // Reusing modal styles
+import './EditLogModal.css' // <-- UPDATED: Using its own CSS file now
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 
-export default function EditLogModal({ logToEdit, onSave, onClose }) {
-  // State for form fields
+export default function EditLogModal({ logToEdit, onSave, onClose, onDelete }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [timeCost, setTimeCost] = useState({ hours: '0', minutes: '0' })
+  const [timeCost, setTimeCost] = useState({ hours: '', minutes: '' })
   const [status, setStatus] = useState(Object.keys(LOG_STATUSES)[0])
   const [warning, setWarning] = useState('')
 
-  // Populate form when editing, or reset when adding new
   useEffect(() => {
     if (logToEdit) {
       setTitle(logToEdit.title)
       setDescription(logToEdit.description || '')
       setStatus(logToEdit.status)
 
-      if (logToEdit.timeCost) {
-        const hoursMatch = logToEdit.timeCost.match(/(\d+)\s*hour/)
-        const minsMatch = logToEdit.timeCost.match(/(\d+)\s*min/)
+      if (logToEdit.time_cost_minutes != null) {
+        const total = logToEdit.time_cost_minutes
         setTimeCost({
-          hours: hoursMatch ? hoursMatch[1] : '',
-          minutes: minsMatch ? minsMatch[1] : '',
+          hours: Math.floor(total / 60),
+          minutes: total % 60,
         })
       } else {
         setTimeCost({ hours: '', minutes: '' })
@@ -54,24 +54,24 @@ export default function EditLogModal({ logToEdit, onSave, onClose }) {
       return
     }
 
-    // Format timeCost back into string
-    let formatted = ''
-    const { hours, minutes } = timeCost
-    if (hours && parseInt(hours) > 0) {
-      formatted += `${parseInt(hours)} hour${parseInt(hours) > 1 ? 's' : ''}`
-    }
-    if (minutes && parseInt(minutes) > 0) {
-      formatted += `${formatted ? ' ' : ''}${parseInt(minutes)} min${parseInt(minutes) > 1 ? 's' : ''}`
-    }
+    const totalMinutes =
+      parseInt(timeCost.hours || 0, 10) * 60 + parseInt(timeCost.minutes || 0, 10)
 
     onSave({
       id: logToEdit ? logToEdit.id : null,
       title,
       description,
-      timeCost: formatted,
+      time_cost_minutes: totalMinutes > 0 ? totalMinutes : null,
       status,
     })
     onClose()
+  }
+
+  const handleDeleteClick = () => {
+    if (logToEdit && onDelete) {
+      onDelete(logToEdit.id)
+      onClose()
+    }
   }
 
   return (
@@ -83,7 +83,6 @@ export default function EditLogModal({ logToEdit, onSave, onClose }) {
             &times;
           </button>
         </div>
-
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="log-title">Title</label>
@@ -106,7 +105,7 @@ export default function EditLogModal({ logToEdit, onSave, onClose }) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Add any extra details here..."
-            ></textarea>
+            />
           </div>
 
           <div className="form-group">
@@ -117,7 +116,6 @@ export default function EditLogModal({ logToEdit, onSave, onClose }) {
                 name="hours"
                 className="time-input"
                 value={timeCost.hours}
-                placeholder="0"
                 onChange={handleTimeCostChange}
                 min="0"
                 max="23"
@@ -128,7 +126,6 @@ export default function EditLogModal({ logToEdit, onSave, onClose }) {
                 name="minutes"
                 className="time-input"
                 value={timeCost.minutes}
-                placeholder="0"
                 onChange={handleTimeCostChange}
                 min="0"
                 max="59"
@@ -161,9 +158,17 @@ export default function EditLogModal({ logToEdit, onSave, onClose }) {
 
           {warning && <div className="warning-message">{warning}</div>}
 
-          <button type="submit" className="submit-task-button">
-            {logToEdit ? 'Save Changes' : 'Add Log'}
-          </button>
+          <div className="modal-footer">
+            <button type="submit" className="submit-task-button">
+              {logToEdit ? 'Save Changes' : 'Add Log'}
+            </button>
+            {logToEdit && (
+              <button type="button" className="delete-button-modal" onClick={handleDeleteClick}>
+                <FontAwesomeIcon icon={faTrash} />
+                Delete
+              </button>
+            )}
+          </div>
         </form>
       </div>
     </div>
